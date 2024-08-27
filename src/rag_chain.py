@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -28,7 +28,7 @@ def format_docs(docs):
 
 def create_rag_chain(chunks):
     embeddings = OpenAIEmbeddings(api_key=api_key)
-    doc_search = Chroma.from_documents(chunks, embeddings)
+    doc_search = FAISS.from_documents(chunks, embeddings)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
@@ -52,5 +52,7 @@ if __name__ == "__main__":
     chunks = process_document(source_file)
     rag_chain = create_rag_chain(chunks)
     print(
-        rag_chain.invoke("How to create a Neo4j reading chain? Write me the full code")
+        rag_chain.invoke(
+            "Give me step by step instructions to create a langchain agent."
+        )
     )
